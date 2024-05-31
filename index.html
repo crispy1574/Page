@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Raid Point Counter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2b2b2b;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+        }
+        .content {
+            flex: 3;
+        }
+        .tracker {
+            flex: 1;
+            margin-left: 20px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+        .rule-button {
+            margin: 5px 0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #6a5acd; /* Purplish-blue */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            display: block;
+        }
+        .rule-section {
+            margin-bottom: 20px;
+        }
+        .rule-description {
+            margin-bottom: 5px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+        }
+	.background-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.2; /* Set opacity to 20% */
+            z-index: -1; /* Ensure the image is behind other content */
+	    width: 20%;
+	    height: auto;
+        }
+    </style>
+</head>
+<body>
+	<!-- Image -->
+	<img class="background-image" src="https://tr.rbxcdn.com/e00d62e7881848a5c57721009a555489/150/150/Image/Webp" alt="Background Image">
+    <div class="content">
+        <h1>Raid Point Counter</h1>
+        <h2>Total Points: <span id="total">0</span></h2>
+
+        <div class="rule-section">
+            <h3>Rule Violations</h3>
+            <span class="rule-description">No entry to combative spawns</span>
+            <button class="rule-button" onclick="updatePoints(-10, 'No entry to combative spawns')">-10</button>
+            
+            <span class="rule-description">No spawn killing/camping</span>
+            <button class="rule-button" onclick="updatePoints(15, 'No spawn killing/camping')">+15</button>
+            <button class="rule-button" onclick="updatePoints(-15, 'No spawn killing/camping')">-15</button>
+            
+            <span class="rule-description">No SCPs/hostages in restricted areas</span>
+            <button class="rule-button" onclick="updatePoints(-10, 'No SCPs/hostages in restricted areas')">-10</button>
+            
+            <span class="rule-description">No restricted items</span>
+            <button class="rule-button" onclick="updatePoints(-10, 'No restricted items')">-10</button>
+            
+            <span class="rule-description">Locking down CDC/Containment Zone</span>
+            <button class="rule-button" onclick="updatePoints(20, 'Locking down CDC/Containment Zone')">+20</button>
+            
+            <span class="rule-description">No closing fire doors</span>
+            <button class="rule-button" onclick="updatePoints(5, 'No closing fire doors')">+5</button>
+            
+            <span class="rule-description">No SCPs affecting stats</span>
+            <button class="rule-button" onclick="updatePoints(-10, 'No SCPs affecting stats')">-10</button>
+            
+            <span class="rule-description">No team switching</span>
+            <button class="rule-button" onclick="updatePoints(-15, 'No team switching')">-15</button>
+            
+            <span class="rule-description">No third-party programs</span>
+            <button class="rule-button" onclick="invalidateRaid()">Invalidate</button>
+            
+            <span class="rule-description">No raid before alarms</span>
+            <button class="rule-button" onclick="updatePoints(-10, 'No raid before alarms')">-10</button>
+            
+            <span class="rule-description">No terminating captured personnel/Class-Ds</span>
+            <button class="rule-button" onclick="updatePoints(10, 'No terminating captured personnel/Class-Ds')">+10</button>
+            
+            <span class="rule-description">No SCP-662 for spawn camping/killing</span>
+            <button class="rule-button" onclick="updatePoints(-20, 'No SCP-662 for spawn camping/killing')">-20</button>
+            
+            <span class="rule-description">No breached SCPs in combative spawns</span>
+            <button class="rule-button" onclick="updatePoints(-15, 'No breached SCPs in combative spawns')">-15</button>
+            
+            <span class="rule-description">TRS only in Containment Zones with requirements</span>
+            <button class="rule-button" onclick="updatePoints(15, 'TRS only in Containment Zones with requirements')">+15</button>
+            
+            <span class="rule-description">No wall shooting</span>
+            <button class="rule-button" onclick="updatePoints(10, 'No wall shooting')">+10</button>
+            <button class="rule-button" onclick="updatePoints(-10, 'No wall shooting')">-10</button>
+            
+            <span class="rule-description">Keep breach shelter open</span>
+            <button class="rule-button" onclick="updatePoints(10, 'Keep breach shelter open')">+10</button>
+            <button class="rule-button" onclick="updatePoints(-10, 'Keep breach shelter open')">-10</button>
+        </div>
+
+        <div class="rule-section">
+            <h3>Primary Raid Objectives</h3>
+            <span class="rule-description">Capture area for 5 minutes</span>
+            <button class="rule-button" onclick="updatePoints(10, 'Capture area for 5 minutes')">+10</button>
+            
+            <span class="rule-description">Secure VIP for 5 minutes</span>
+            <button class="rule-button" onclick="updatePoints(25, 'Secure VIP for 5 minutes')">+25</button>
+            
+            <span class="rule-description">Terminate VIP by combative personnel</span>
+            <button class="rule-button" onclick="updatePoints(15, 'Terminate VIP by combative personnel')">+15</button>
+        </div>
+
+        <div class="rule-section">
+            <h3>Secondary Raid Objectives</h3>
+            <span class="rule-description">Hostage (Level 1) for 3 minutes</span>
+            <button class="rule-button" onclick="updatePoints(5, 'Hostage (Level 1) for 3 minutes')">+5</button>
+            
+            <span class="rule-description">Hostage (Level 2) for 3 minutes</span>
+            <button class="rule-button" onclick="updatePoints(10, 'Hostage (Level 2) for 3 minutes')">+10</button>
+            
+            <span class="rule-description">Hostage (Level 3) for 5 minutes</span>
+            <button class="rule-button" onclick="updatePoints(15, 'Hostage (Level 3) for 5 minutes')">+15</button>
+            
+            <span class="rule-description">Hostage (Level 4) for 5 minutes</span>
+            <button class="rule-button" onclick="updatePoints(20, 'Hostage (Level 4) for 5 minutes')">+20</button>
+            
+            <span class="rule-description">Site Director Hostage for 6 minutes</span>
+            <button class="rule-button" onclick="updatePoints(25, 'Site Director Hostage for 6 minutes')">+25</button>
+            
+            <span class="rule-description">O5 Hostage for 8 minutes</span>
+            <button class="rule-button" onclick="hostileVictory()">Hostile Victory</button>
+            
+            <span class="rule-description">Extract one Class-D</span>
+            <button class="rule-button" onclick="updatePoints(5, 'Extract one Class-D')">+5</button>
+            
+            <span class="rule-description">Extract one affected Class-D</span>
+            <button class="rule-button" onclick="updatePoints(10, 'Extract one affected Class-D')">+10</button>
+        </div>
+
+        <div class="rule-section">
+            <h3>Containment Breaches</h3>
+            <span class="rule-description">SCP Breached outside Light Containment chamber</span>
+            <button class="rule-button" onclick="updatePoints(5, 'SCP Breached outside Light Containment chamber')">+5</button>
+            
+            <span class="rule-description">SCP Breached past Light Containment scanners</span>
+            <button class="rule-button" onclick="updatePoints(10, 'SCP Breached past Light Containment scanners')">+10</button>
+            
+            <span class="rule-description">SCP Breached outside Light Containment</span>
+            <button class="rule-button" onclick="updatePoints(15, 'SCP Breached outside Light Containment')">+15</button>
+            
+            <span class="rule-description">SCP Breached outside Medium Containment chamber</span>
+            <button class="rule-button" onclick="updatePoints(10, 'SCP Breached outside Medium Containment chamber')">+10</button>
+            
+            <span class="rule-description">SCP Breached past Medium Containment scanners</span>
+            <button class="rule-button" onclick="updatePoints(15, 'SCP Breached past Medium Containment scanners')">+15</button>
+            
+            <span class="rule-description">SCP Breached outside Medium Containment</span>
+            <button class="rule-button" onclick="updatePoints(20, 'SCP Breached outside Medium Containment')">+20</button>
+            
+            <span class="rule-description">SCP Breached outside Heavy Containment chamber</span>
+            <button class="rule-button" onclick="updatePoints(15, 'SCP Breached outside Heavy Containment chamber')">+15</button>
+            
+            <span class="rule-description">SCP Breached past Heavy Containment scanners</span>
+            <button class="rule-button" onclick="updatePoints(20, 'SCP Breached past Heavy Containment scanners')">+20</button>
+            
+            <span class="rule-description">SCP Breached outside Heavy Containment</span>
+            <button class="rule-button" onclick="updatePoints(25, 'SCP Breached outside Heavy Containment')">+25</button>
+            
+            <span class="rule-description">DAI SCP Extracted to Hostile Spawn</span>
+            <button class="rule-button" onclick="updatePoints(15, 'DAI SCP Extracted to Hostile Spawn')">+15</button>
+            
+            <span class="rule-description">Recontained SCP</span>
+            <button class="rule-button" onclick="updatePoints(-10, 'Recontained SCP')">-10</button>
+            
+            <span class="rule-description">DAI SCP Recontained</span>
+            <button class="rule-button" onclick="updatePoints(-20, 'DAI SCP Recontained')">-20</button>
+            
+            <span class="rule-description">Spreading SCP-310</span>
+            <button class="rule-button" onclick="updatePoints(10, 'Spreading SCP-310')">+10</button>
+            
+            <span class="rule-description">Using SCP-034</span>
+            <button class="rule-button" onclick="updatePoints(5, 'Using SCP-034')">+5</button>
+        </div>
+    </div>
+
+    <div class="tracker">
+        <h2>Button Tracker</h2>
+        <div id="tracker-log"></div>
+    </div>
+
+    <script>
+        let total = 0;
+
+        function updatePoints(points, description) {
+            total += points;
+            document.getElementById('total').innerText = total;
+
+            // Log button press
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerText = `${description}: ${points > 0 ? '+' : ''}${points} points`;
+            document.getElementById('tracker-log').appendChild(logEntry);
+        }
+
+        function invalidateRaid() {
+            alert("Raid Invalidated");
+            total = 0;
+            document.getElementById('total').innerText = total;
+
+            // Clear tracker log
+            document.getElementById('tracker-log').innerHTML = '';
+        }
+
+        function hostileVictory() {
+            alert("Hostile Victory");
+            total = 0;
+            document.getElementById('total').innerText = total;
+
+            // Clear tracker log
+            document.getElementById('tracker-log').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
